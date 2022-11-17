@@ -1,0 +1,47 @@
+version: '2'
+services:
+  voicevox-container:
+    container_name: voicevox-container
+    image: voicevox/voicevox_engine:nvidia-ubuntu20.04-latest
+    restart: always
+    runtime: nvidia
+    environment:
+      - CUDA_VISIBLE_DEVICES=1
+    ports:
+      - "8004:50021"
+
+  mtcnn-container:
+    container_name: mtcnn-container
+    image: facenet
+    restart: always
+    runtime: nvidia
+    environment:
+      - CUDA_VISIBLE_DEVICES=1
+    volumes:
+      - ./mtcnn:/workspace
+    ports:
+      - "8006:8006"
+    command: uvicorn app:app --reload --host 0.0.0.0 --port 8006
+
+  animator-container:
+    container_name: animator-container
+    image: animator
+    restart: always
+    runtime: nvidia
+    environment:
+      - CUDA_VISIBLE_DEVICES=1
+    volumes:
+      - ./animator:/workspace
+    ports:
+      - "8007:8007"
+    command: uvicorn app:app --reload --host 0.0.0.0 --port 8007
+
+  stream-container:
+    container_name: stream-container
+    image: stream
+    restart: always
+    volumes:
+      - .:/workspace
+    ports:
+      - "8000:8000"
+    command: streamlit run app.py --server.address 0.0.0.0 --server.port 8000

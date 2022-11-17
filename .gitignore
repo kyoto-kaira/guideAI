@@ -1,0 +1,9 @@
+__pycache__
+
+*.pt
+*.pth
+
+result.png
+sample.jpg
+
+*.mp4
